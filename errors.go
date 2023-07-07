@@ -16,8 +16,8 @@ func InvalidLength(len int) error {
 	return fmt.Errorf("%w: %d, expected 20", ErrInvalidLength, len)
 }
 
-func InvalidChar(pos int, char string) error {
-	return fmt.Errorf("%w at position %d: %s", ErrInvalidChar, pos, char)
+func InvalidChar(pos int, char rune) error {
+	return fmt.Errorf("%w at position %d: %c", ErrInvalidChar, pos, char)
 }
 
 func UnknownRA(ra string) error {
