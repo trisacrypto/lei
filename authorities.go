@@ -1,7 +1,6 @@
 package lei
 
 import (
-	"fmt"
 	"sort"
 	"strings"
 )
@@ -24,7 +23,7 @@ func NewRA(ra string) (authority RegistrationAuthority, err error) {
 	}
 
 	if authority.index < 0 || authority.index > len(registrationAuthorities) {
-		err = fmt.Errorf("unknown registration authority: %s", ra)
+		err = UnknownRA(ra)
 	}
 
 	return authority, err

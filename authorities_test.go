@@ -27,6 +27,7 @@ func TestRAIndex(t *testing.T) {
 	for i, tc := range testCases {
 		ra, err := lei.NewRA(tc.input)
 		if tc.err != nil {
+			require.ErrorIs(t, err, lei.ErrUnknownRA, "test case %d expected an unknown ra error")
 			require.EqualError(t, err, tc.err.Error(), "test case %d expected an error", i)
 			require.Equal(t, "UNKNOWN", ra.String(), "test case %d expected invalid RA", i)
 		} else {
