@@ -14,15 +14,27 @@ This library is a port of the [leim](https://gitlab.com/21analytics/lei) Rust li
 import "github.com/trisacrypto/lei"
 
 func main() {
-    // Parse a valid LEI and check it
-    if entityID, err := lei.Parse("2594007XIACKNMUAW223"); err != nil {
-        log.Fatal(err)
-    }
-    fmt.Println(entityID.Check())
+    // Check that a string is a valid LEI
+    err := lei.LEI("2594007XIACKNMUAW223").Check()
+    // err == nil
 
-    // Parse an invalid LEI and print the invalid checksum error.
-    _, err := lei.Parse("2594007XIACKNMUAW222")
-    fmt.Println(err)
+    // Parse invalid LEIs to return error information
+    err = lei.LEI("2594007XIACKNMUAW222").Check()
+    // errors.Is(err, lei.ErrInvalidChecksum) == true
+
+    err = lei.LEI("25947XCKNMUAW223").Check()
+    // errors.Is(err, lei.ErrInvalidLength) == true
+
+    err = lei.LEI("2594007X#ACKNMUAW223").Check()
+    // errors.Is(err, lei.ErrInvalidChar) == true
+
+    // Check that a RegistrationAuthority is valid
+    err = lei.CheckRA("RA777777")
+    // err == nil
+
+    // Lookup an unknown RegistrationAuthority
+    err = lei.CheckRA("RA009099")
+    // errors.Is(err, lei.ErrUnknownRA) == true
 }
 ```
 

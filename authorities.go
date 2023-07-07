@@ -5,35 +5,45 @@ import (
 	"strings"
 )
 
+// A RegistrationAuthority is an enumeration of the GLEIF authorities that can issue
+// LEI identifiers. The RegistrationAuthority is primarily used for validating that a
+// string is one of the specified RAs in the GLEIF code-list.
 // See <https://www.gleif.org/en/about-lei/code-lists/gleif-registration-authorities-list>
-type RegistrationAuthority struct {
-	index int
-}
+type RegistrationAuthority int16
 
+const (
+	numAuthorities = RegistrationAuthority(len(registrationAuthorities))
+)
+
+// Create a RegistrationAuthority from a string and verify that it is valid.
 func NewRA(ra string) (authority RegistrationAuthority, err error) {
 	ra = strings.ToUpper(ra)
-	authority = RegistrationAuthority{
-		index: sort.SearchStrings(registrationAuthorities[:], ra),
-	}
+	authority = RegistrationAuthority(sort.SearchStrings(registrationAuthorities[:], ra))
 
-	if authority.index >= 0 && authority.index < len(registrationAuthorities) {
-		if registrationAuthorities[authority.index] != ra {
-			authority.index = -1
+	if authority >= 0 && authority < numAuthorities {
+		if registrationAuthorities[authority] != ra {
+			authority = -1
 		}
 	}
 
-	if authority.index < 0 || authority.index > len(registrationAuthorities) {
+	if authority < 0 || authority > numAuthorities {
 		err = UnknownRA(ra)
 	}
 
 	return authority, err
 }
 
+// Check that the RegistrationAuthority string is valid.
+func CheckRA(ra string) error {
+	_, err := NewRA(ra)
+	return err
+}
+
 func (r RegistrationAuthority) String() string {
-	if r.index < 0 || r.index > len(registrationAuthorities) {
+	if r < 0 || r > numAuthorities {
 		return "UNKNOWN"
 	}
-	return registrationAuthorities[r.index]
+	return registrationAuthorities[r]
 }
 
 // Returns the list of available registration authorities.
